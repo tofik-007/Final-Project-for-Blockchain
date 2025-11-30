@@ -191,7 +191,7 @@ http://127.0.0.1:5001
 3. See all IN/OUT transactions for that address, including:
    - Direction.
    - Amount.
-   - Counterparty.
+   - Counterparty/Recipient.
    - Block number and status.
    - Timestamp.
 
