@@ -98,6 +98,34 @@
         </div>
     </div>
 
+    <!-- Balance card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="mb-3">Check Balance</h4>
+            <p class="text-muted mb-3">
+                Paste a public key, then click <strong>Get Balance</strong> to calculate received, sent, and balance from this node.
+            </p>
+
+            <div class="form-group">
+                <label for="balance_public_key">Public key</label>
+                <textarea
+                    id="balance_public_key"
+                    rows="2"
+                    class="form-control"
+                    placeholder="Paste public key here"></textarea>
+            </div>
+
+            <button id="button_get_balance" class="btn btn-outline-primary">
+                Get Balance
+            </button>
+
+            <div id="balance_result" class="mt-3" style="display:none;">
+                <p class="mb-1"><strong>Received:</strong> <span id="balance_received">0</span></p>
+                <p class="mb-1"><strong>Sent:</strong> <span id="balance_sent">0</span></p>
+                <p class="mb-0"><strong>Balance:</strong> <span id="balance_total">0</span></p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Confirmation Modal -->
@@ -234,6 +262,116 @@ $(function () {
                     msg = xhr.responseJSON.message;
                 }
                 alert(msg);
+            }
+        });
+    });
+    
+    // Balance calculation using /chain
+    $('#button_get_balance').click(function () {
+        const pubKey = $('#balance_public_key').val().trim();
+        if (!pubKey) {
+            alert('Please paste a public key first.');
+            return;
+        }
+
+        $.ajax({
+            url: 'http://127.0.0.1:5001/chain',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                let received = 0.0;
+                let sent = 0.0;
+
+                for (let i = 0; i < response.length; i++) {
+                    const block = response.chain[i];
+                    const txs = block.transactions || [];
+                    for (let j = 0; j < txs.length; j++) {
+                        const tx = txs[j];
+                        const amt = parseFloat(tx.amount || 0);
+
+                        if (tx.recipient_public_key === pubKey) {
+                            received += amt;
+                        }
+                        if (tx.sender_public_key === pubKey) {
+                            sent += amt;
+                        }
+                    }
+                }
+
+                const balance = received - sent;
+
+                $('#balance_received').text(received);
+                $('#balance_sent').text(sent);
+                $('#balance_total').text(balance);
+                $('#balance_result').show();
+            },
+            error: function (err) {
+                console.log(err);
+                alert('Could not fetch chain from node.');
+            }
+        });
+    });
+
+    // Address activity using /address/<pub>/transactions
+    $('#button_get_history').click(function () {
+        const pubKey = $('#history_public_key').val().trim();
+        if (!pubKey) {
+            alert('Please paste a public key first.');
+            return;
+        }
+
+        $.ajax({
+            url: 'http://127.0.0.1:5001/address/' + encodeURIComponent(pubKey) + '/transactions',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                const tbody = $('#history_table tbody');
+                tbody.empty();
+
+                const txs = response.transactions || [];
+                if (txs.length === 0) {
+                    $('#history_wrapper').show();
+                    tbody.append('<tr><td colspan="6" class="text-muted">No transactions found for this address.</td></tr>');
+                    return;
+                }
+
+                for (let i = 0; i < txs.length; i++) {
+                    const tx = txs[i];
+                    const direction = tx.direction || '';
+                    const amount = tx.amount;
+                    const status = tx.status || '';
+                    const blockNumber = tx.block_number || '-';
+
+                    let counterparty = '';
+                    if (direction === 'OUT') {
+                        counterparty = tx.recipient_public_key;
+                    } else if (direction === 'IN') {
+                        counterparty = tx.sender_public_key;
+                    }
+
+                    let timestampText = '-';
+                    if (tx.timestamp) {
+                        const date = new Date(tx.timestamp * 1000);
+                        timestampText = date.toLocaleString();
+                    }
+
+                    const row = '<tr>' +
+                        '<td>' + direction + '</td>' +
+                        '<td>' + amount + '</td>' +
+                        '<td style="max-width: 320px; word-break: break-all;">' + counterparty + '</td>' +
+                        '<td>' + blockNumber + '</td>' +
+                        '<td>' + status + '</td>' +
+                        '<td>' + timestampText + '</td>' +
+                        '</tr>';
+
+                    tbody.append(row);
+                }
+
+                $('#history_wrapper').show();
+            },
+            error: function (err) {
+                console.log(err);
+                alert('Could not load address activity from node.');
             }
         });
     });
