@@ -39,6 +39,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body text-center">
             <h4 class="card-title">Wallet Generator</h4>
+
             <p class="card-text">Click the button below to generate a new blockchain wallet.</p>
             <input type="button" id="button_generate_wallet" class="btn btn-primary btn-lg" value="Generate Wallet">
         </div>
@@ -89,6 +90,7 @@
 <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <script>
+
 $(function () {
 
     function copyToClipboard(value, label) {
@@ -140,6 +142,7 @@ $(function () {
     }
 
     $('#button_generate_wallet').click(function () {
+
         console.log('Generate wallet clicked');
 
         var loading = true;
