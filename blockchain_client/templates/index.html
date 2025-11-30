@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Blockchain Client - Wallet Generator</title>
+
     <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/vendor/font-awesome/font-awesome.min.css">
     <link rel="stylesheet" href="/static/css/custom.css">
@@ -11,9 +13,11 @@
 </head>
 
 <body class="bg-light">
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
         <a href="#" class="navbar-brand">Blockchain Client</a>
+
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item active">
@@ -31,9 +35,11 @@
 </nav>
 
 <div class="container" style="margin-top:90px; max-width:900px;">
+
     <div class="card shadow-sm mb-4">
         <div class="card-body text-center">
             <h4 class="card-title">Wallet Generator</h4>
+
             <p class="card-text">Click the button below to generate a new blockchain wallet.</p>
             <input type="button" id="button_generate_wallet" class="btn btn-primary btn-lg" value="Generate Wallet">
         </div>
@@ -41,6 +47,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
+
             <h5 class="mb-3">Your Keys</h5>
 
             <div class="form-group">
@@ -79,16 +86,22 @@
     </div>
 </div>
 
+
 <script src="/static/vendor/jquery/jquery.min.js"></script>
 <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <script>
+
+
 $(function () {
+
+
     function copyToClipboard(value, label) {
         if (!value) {
             alert('Nothing to copy for ' + label + '.');
             return;
         }
+
 
         console.log('Copying:', label, value);
 
@@ -111,6 +124,7 @@ $(function () {
 
         var tempArea = document.createElement("textarea");
         tempArea.value = text;
+
         tempArea.style.position = "fixed";
         tempArea.style.top = "-999px";
         document.body.appendChild(tempArea);
@@ -132,6 +146,7 @@ $(function () {
     }
 
     $('#button_generate_wallet').click(function () {
+
         console.log('Generate wallet clicked');
 
         var loading = true;
@@ -140,12 +155,16 @@ $(function () {
             url: '/wallet/new',
             type: 'GET',
             dataType: 'json',
+
             success: function (response) {
                 loading = false;
+
                 $('#public_key').val((response.public_key || '').trim());
                 $('#private_key').val((response.private_key || '').trim());
+
                 console.log('Wallet generated:', response);
             },
+
             error: function (err) {
                 console.log(err);
                 alert('Error generating wallet.');
@@ -160,7 +179,9 @@ $(function () {
     $('#copy_private_key').click(function () {
         copyToClipboard($('#private_key').val().trim(), 'Private key');
     });
+
 });
 </script>
+
 </body>
 </html>
