@@ -1,298 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blockchain Client - Make Transaction</title>
 
     <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/vendor/DataTables/css/datatables.min.css">
     <link rel="stylesheet" href="/static/vendor/font-awesome/font-awesome.min.css">
     <link rel="stylesheet" href="/static/css/custom.css">
 </head>
-
 <body class="bg-light make-transaction-page">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a href="#" class="navbar-brand">Blockchain Client</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <a href="#" class="navbar-brand">Blockchain Client</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a href="/" class="nav-link">Wallet Generator</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a href="/make/transaction" class="nav-link">Make Transaction</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/view/transaction" class="nav-link">View Transactions</a>
-                    </li>
-                </ul>
-            </div>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="/" class="nav-link">Wallet Generator</a>
+                </li>
+                <li class="nav-item active">
+                    <a href="/make/transaction" class="nav-link">Make Transaction</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/view/transaction" class="nav-link">View Transactions</a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- Main content -->
-    <div class="container main-card" style="margin-top: 90px;">
-        <div class="card shadow-sm mt-4 mb-5">
-            <div class="card-body">
-                <h2 class="text-center mb-1">Send Coins</h2>
-                <p class="text-center text-muted mb-4">
-                    Enter transaction details and click on <strong>Generate Transaction</strong>.
-                </p>
+<div class="container" style="margin-top: 90px; max-width: 900px;">
 
-                <form id="transaction_form">
-                    <div class="form-group">
-                        <label for="sender_public_key">Sender public key</label>
-                        <textarea name="sender_public_key" id="sender_public_key" rows="3" class="form-control"
-                            placeholder="Paste the sender public key here"></textarea>
-                        <small class="text-danger d-none" id="error_sender_public"></small>
-                    </div>
+    <!-- Make Transaction card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h2 class="text-center mb-1">Send Coins</h2>
+            <p class="text-center text-muted mb-4">
+                Enter transaction details and click <strong>Generate Transaction</strong>.
+            </p>
 
-                    <div class="form-group">
-                        <label for="sender_private_key">Sender private key</label>
-                        <textarea name="sender_private_key" id="sender_private_key" rows="3" class="form-control"
-                            placeholder="Paste the sender private key here"></textarea>
-                        <small class="text-danger d-none" id="error_sender_private"></small>
-                    </div>
+            <form id="transaction_form">
+                <div class="form-group">
+                    <label for="sender_public_key">Sender public key</label>
+                    <textarea
+                        name="sender_public_key"
+                        id="sender_public_key"
+                        rows="3"
+                        class="form-control"
+                        placeholder="Paste the sender public key here"></textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label for="receipient_public_key">Recipient public key</label>
-                        <textarea name="receipient_public_key" id="receipient_public_key" rows="3" class="form-control"
-                            placeholder="Paste the recipient public key here"></textarea>
-                        <small class="text-danger d-none" id="error_recipient_public"></small>
-                    </div>
+                <div class="form-group">
+                    <label for="sender_private_key">Sender private key</label>
+                    <textarea
+                        name="sender_private_key"
+                        id="sender_private_key"
+                        rows="3"
+                        class="form-control"
+                        placeholder="Paste the sender private key here"></textarea>
+                </div>
 
-                    <div class="form-group">
-                        <label for="amount">Amount</label>
-                        <input type="number" min="0" step="any" name="amount" id="amount" class="form-control"
-                            placeholder="Enter amount to send">
-                        <small class="text-danger d-none" id="error_amount"></small>
-                    </div>
+                <div class="form-group">
+                    <label for="receipient_public_key">Recipient public key</label>
+                    <textarea
+                        name="receipient_public_key"
+                        id="receipient_public_key"
+                        rows="3"
+                        class="form-control"
+                        placeholder="Paste the recipient public key here"></textarea>
+                </div>
 
-                    <div class="text-right mt-3">
-                        <button type="button" id="generate_transaction" name="generate_transaction"
-                            class="btn btn-primary px-4">
-                            <i class="fa fa-bolt mr-1"></i> Generate Transaction
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        name="amount"
+                        id="amount"
+                        class="form-control"
+                        placeholder="Enter amount to send">
+                </div>
+
+                <div class="text-right mt-3">
+                    <button
+                        type="button"
+                        id="generate_transaction"
+                        class="btn btn-primary px-4">
+                        <i class="fa fa-bolt mr-1"></i> Generate Transaction
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
-    <div class="modal fade" id="basic_modal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
+</div>
 
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        Confirm Transaction
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+<!-- Confirmation Modal -->
+<div class="modal fade" id="basic_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
 
-                <div class="modal-body">
-                    <p class="text-muted">
-                        Review the transaction details below, set the blockchain node URL,
-                        and click <strong>Confirm Transaction</strong> to broadcast it.
-                    </p>
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Transaction</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
 
-                    <form id="confirmation_transaction_form">
-                        <div class="form-group">
-                            <label for="confirmation_sender_public_key">Sender Public Key</label>
-                            <textarea id="confirmation_sender_public_key" name="sender_public_key" rows="2"
-                                class="form-control" readonly></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirmation_receipient_public_key">Recipient Public Key</label>
-                            <textarea id="confirmation_receipient_public_key" name="receipient_public_key" rows="2"
-                                class="form-control" readonly></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="confirmation_amount">Amount to Send</label>
-                                <input type="text" id="confirmation_amount" name="amount" class="form-control" readonly>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label for="node_url">Blockchain Node URL</label>
-                                <input type="text" id="node_url" name="node_url" class="form-control"
-                                    value="http://127.0.0.1:5001">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="transaction_signature">Transaction Signature</label>
-                            <textarea id="transaction_signature" name="signature" rows="2" class="form-control"
-                                readonly></textarea>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
-                        Cancel
-                    </button>
-                    <button type="button" id="button_confirm_transaction" class="btn btn-success">
-                        <i class="fa fa-check mr-1"></i> Confirm Transaction
-                    </button>
-                </div>
-
+      <div class="modal-body">
+        <form id="confirmation_transaction_form">
+            <!-- sender_public_key -->
+            <div class="form-group">
+                <label for="confirmation_sender_public_key">Sender Public Key</label>
+                <textarea
+                    id="confirmation_sender_public_key"
+                    name="sender_public_key"
+                    rows="2"
+                    class="form-control"
+                    readonly></textarea>
             </div>
-        </div>
-    </div>
 
-    <!-- Success Modal -->
-    <div class="modal fade" id="success_transaction_modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-
-                <div class="modal-header border-0">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body pt-0">
-                    <div class="alert alert-success mb-0" role="alert">
-                        <h4 class="alert-heading">Successful Transaction!</h4>
-                        <p class="mb-0">
-                            Your transaction has been broadcast to the node and will be added to the next mined block.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="modal-footer border-0">
-                    <button type="button" id="confirm_transaction" class="btn btn-success" data-dismiss="modal">
-                        OK
-                    </button>
-                </div>
-
+            <!-- receipient_public_key -->
+            <div class="form-group">
+                <label for="confirmation_receipient_public_key">Recipient Public Key</label>
+                <textarea
+                    id="confirmation_receipient_public_key"
+                    name="receipient_public_key"
+                    rows="2"
+                    class="form-control"
+                    readonly></textarea>
             </div>
-        </div>
+
+            <div class="form-row">
+                <!-- amount -->
+                <div class="form-group col-md-6">
+                    <label for="confirmation_amount">Amount</label>
+                    <input
+                        type="text"
+                        id="confirmation_amount"
+                        name="amount"
+                        class="form-control"
+                        readonly>
+                </div>
+
+                <!-- node_url: not sent to node -->
+                <div class="form-group col-md-6">
+                    <label for="node_url">Blockchain Node URL</label>
+                    <input
+                        type="text"
+                        id="node_url"
+                        class="form-control"
+                        value="http://127.0.0.1:5001">
+                </div>
+            </div>
+
+            <!-- signature -->
+            <div class="form-group">
+                <label for="transaction_signature">Transaction Signature</label>
+                <textarea
+                    id="transaction_signature"
+                    name="signature"
+                    rows="2"
+                    class="form-control"
+                    readonly></textarea>
+            </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+            Cancel
+        </button>
+        <button type="button" id="button_confirm_transaction" class="btn btn-success">
+            Confirm Transaction
+        </button>
+      </div>
+
     </div>
+  </div>
+</div>
 
-    <script src="/static/vendor/jquery/jquery.min.js"></script>
-    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/vendor/DataTables/js/datatables.min.js"></script>
-    <script src="/static/vendor/DataTables/js/ellipsis.js"></script>
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        $(function () {
-            function clearErrors() {
-                $('#error_sender_public, #error_sender_private, #error_recipient_public, #error_amount')
-                    .addClass('d-none')
-                    .text('');
+<script>
+$(function () {
+
+    // Generate transaction: creates and signs tx on client backend
+    $('#generate_transaction').click(function () {
+        $.ajax({
+            url:"/generate/transaction",
+            type:"POST",
+            dataType:"json",
+            data:$('#transaction_form').serialize(),
+            success:function(response)
+            {
+                const tx = response.transaction;
+                $('#confirmation_sender_public_key').val(tx.sender_public_key);
+                $('#confirmation_receipient_public_key').val(tx.receipient_public_key);
+                $('#confirmation_amount').val(tx.amount);
+                $('#transaction_signature').val(response.signature);
+                $('#basic_modal').modal('show');
+            },
+            error: function(response)
+            {
+                console.log(response);
+                alert('Error generating transaction');
             }
-
-            function isHexLike(str) {
-                return /^[0-9a-fA-F]+$/.test(str.replace(/\s+/g, ''));
-            }
-
-            $("#generate_transaction").click(function () {
-                clearErrors();
-
-                const senderPub = $('#sender_public_key').val().trim();
-                const senderPriv = $('#sender_private_key').val().trim();
-                const recipPub = $('#receipient_public_key').val().trim();
-                const amountStr = $('#amount').val().trim();
-
-                let valid = true;
-
-                if (!senderPub) {
-                    $('#error_sender_public').text('Sender public key is required.').removeClass('d-none');
-                    valid = false;
-                } else if (!isHexLike(senderPub)) {
-                    $('#error_sender_public').text('Sender public key should look like a hex string.').removeClass('d-none');
-                    valid = false;
-                }
-
-                if (!senderPriv) {
-                    $('#error_sender_private').text('Sender private key is required.').removeClass('d-none');
-                    valid = false;
-                } else if (!isHexLike(senderPriv)) {
-                    $('#error_sender_private').text('Sender private key should look like a hex string.').removeClass('d-none');
-                    valid = false;
-                }
-
-                if (!recipPub) {
-                    $('#error_recipient_public').text('Recipient public key is required.').removeClass('d-none');
-                    valid = false;
-                } else if (!isHexLike(recipPub)) {
-                    $('#error_recipient_public').text('Recipient public key should look like a hex string.').removeClass('d-none');
-                    valid = false;
-                }
-
-                const amountVal = parseFloat(amountStr);
-                if (!amountStr) {
-                    $('#error_amount').text('Amount is required.').removeClass('d-none');
-                    valid = false;
-                } else if (isNaN(amountVal) || amountVal <= 0) {
-                    $('#error_amount').text('Amount must be a positive number.').removeClass('d-none');
-                    valid = false;
-                }
-
-                if (!valid) {
-                    return;
-                }
-
-                $.ajax({
-                    url: "/generate/transaction",
-                    type: "POST",
-                    dataType: "json",
-                    data: $('#transaction_form').serialize(),
-                    success: function (response) {
-                        document.getElementById('confirmation_sender_public_key').value =
-                            response['transaction']['sender_public_key'];
-                        document.getElementById('confirmation_receipient_public_key').value =
-                            response['transaction']['receipient_public_key'];
-                        document.getElementById('confirmation_amount').value =
-                            response['transaction']['amount'];
-                        document.getElementById('transaction_signature').value =
-                            response['signature'];
-                        $('#basic_modal').modal('show');
-                    },
-                    error: function (response) {
-                        console.log(response);
-                    }
-                });
-            });
-
-            $('#button_confirm_transaction').click(function () {
-                $.ajax({
-                    url: document.getElementById("node_url").value + "/transaction/new",
-                    type: "POST",
-                    dataType: "json",
-                    headers: { "Access-Control-Allow-Origin": "*" },
-                    data: $("#confirmation_transaction_form").serialize(),
-                    success: function (response) {
-                        $('#sender_public_key').val('');
-                        $('#sender_private_key').val('');
-                        $('#receipient_public_key').val('');
-                        $('#amount').val('');
-                        $('#basic_modal').modal('hide');
-                        $('#success_transaction_modal').modal('show');
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Transaction error:", error);
-                    }
-                });
-            });
-
         });
-    </script>
-</body>
+    });
 
+    // Confirm transaction: sends tx + signature to node
+    $('#button_confirm_transaction').click(function () {
+        $.ajax({
+            url: $('#node_url').val() + "/transaction/new",
+            type: "POST",
+            dataType: "json",
+            headers: { "Access-Control-Allow-Origin": "*" },
+            data: $("#confirmation_transaction_form").serialize(),
+            success: function () {
+                $('#basic_modal').modal('hide');
+                alert('Transaction sent to node');
+            },
+            error: function (xhr, status, error) {
+                console.error("Transaction error:", error);
+                let msg = 'Error sending transaction to node';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                alert(msg);
+            }
+        });
+    });
+
+});
+</script>
+
+</body>
 </html>
