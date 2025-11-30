@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,413 +10,399 @@
     <link rel="stylesheet" href="/static/vendor/font-awesome/font-awesome.min.css">
     <link rel="stylesheet" href="/static/css/custom.css">
 </head>
-<body class="bg-light make-transaction-page">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container">
-        <a href="#" class="navbar-brand">Blockchain Client</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a href="/" class="nav-link">Wallet Generator</a>
-                </li>
-                <li class="nav-item active">
-                    <a href="/make/transaction" class="nav-link">Make Transaction</a>
-                </li>
-                <li class="nav-item">
-                    <a href="/view/transaction" class="nav-link">View Transactions</a>
-                </li>
-            </ul>
+<body class="bg-light make-transaction-page">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a href="#" class="navbar-brand">Blockchain Client</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Wallet Generator</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="/make/transaction" class="nav-link">Make Transaction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/view/transaction" class="nav-link">View Transactions</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 90px; max-width: 900px;">
+
+        <!-- Make Transaction card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="text-center mb-1">Send Coins</h2>
+                <p class="text-center text-muted mb-4">
+                    Enter transaction details and click <strong>Generate Transaction</strong>.
+                </p>
+                <p class="text-center text-muted mb-2">
+                    Transactions may be rejected if the amount is not positive, the sender and recipient keys are the
+                    same,
+                    or the digital signature does not match the sender’s keys.
+                </p>
+                <form id="transaction_form">
+                    <div class="form-group">
+                        <label for="sender_public_key">Sender public key</label>
+                        <textarea name="sender_public_key" id="sender_public_key" rows="3" class="form-control"
+                            placeholder="Paste the sender public key here"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sender_private_key">Sender private key</label>
+                        <textarea name="sender_private_key" id="sender_private_key" rows="3" class="form-control"
+                            placeholder="Paste the sender private key here"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="receipient_public_key">Recipient public key</label>
+                        <textarea name="receipient_public_key" id="receipient_public_key" rows="3" class="form-control"
+                            placeholder="Paste the recipient public key here"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" min="0" step="any" name="amount" id="amount" class="form-control"
+                            placeholder="Enter amount to send">
+                    </div>
+
+                    <div class="text-right mt-3">
+                        <button type="button" id="generate_transaction" class="btn btn-primary px-4">
+                            <i class="fa fa-bolt mr-1"></i> Generate Transaction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Balance card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h4 class="mb-3">Check Balance</h4>
+                <p class="text-muted mb-3">
+                    Paste a public key, then click <strong>Get Balance</strong> to calculate received, sent, and balance
+                    from this node.
+                </p>
+
+                <div class="form-group">
+                    <label for="balance_public_key">Public key</label>
+                    <textarea id="balance_public_key" rows="2" class="form-control"
+                        placeholder="Paste public key here"></textarea>
+                </div>
+
+                <button id="button_get_balance" class="btn btn-outline-primary">
+                    Get Balance
+                </button>
+
+                <div id="balance_result" class="mt-3" style="display:none;">
+                    <p class="mb-1"><strong>Received:</strong> <span id="balance_received">0</span></p>
+                    <p class="mb-1"><strong>Sent:</strong> <span id="balance_sent">0</span></p>
+                    <p class="mb-0"><strong>Balance:</strong> <span id="balance_total">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Address Activity card -->
+        <div class="card shadow-sm mb-5">
+            <div class="card-body">
+                <h4 class="mb-3">Address Activity</h4>
+                <p class="text-muted mb-3">
+                    Paste a public key and click <strong>Load Activity</strong> to see all transactions involving that
+                    address.
+                </p>
+
+                <div class="form-group">
+                    <label for="history_public_key">Public key</label>
+                    <textarea id="history_public_key" rows="2" class="form-control"
+                        placeholder="Paste public key here"></textarea>
+                </div>
+
+                <button id="button_get_history" class="btn btn-outline-primary">
+                    Load Activity
+                </button>
+
+                <div class="table-responsive mt-3" id="history_wrapper" style="display:none;">
+                    <table class="table table-sm table-striped" id="history_table">
+                        <thead>
+                            <tr>
+                                <th>Direction</th>
+                                <th>Amount</th>
+                                <th>Recipient Public Key</th>
+                                <th>Block#</th>
+                                <th>Status</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-</nav>
 
-<div class="container" style="margin-top: 90px; max-width: 900px;">
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="basic_modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
 
-    <!-- Make Transaction card -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h2 class="text-center mb-1">Send Coins</h2>
-            <p class="text-center text-muted mb-4">
-                Enter transaction details and click <strong>Generate Transaction</strong>.
-            </p>
-
-            <form id="transaction_form">
-                <div class="form-group">
-                    <label for="sender_public_key">Sender public key</label>
-                    <textarea
-                        name="sender_public_key"
-                        id="sender_public_key"
-                        rows="3"
-                        class="form-control"
-                        placeholder="Paste the sender public key here"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="sender_private_key">Sender private key</label>
-                    <textarea
-                        name="sender_private_key"
-                        id="sender_private_key"
-                        rows="3"
-                        class="form-control"
-                        placeholder="Paste the sender private key here"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="receipient_public_key">Recipient public key</label>
-                    <textarea
-                        name="receipient_public_key"
-                        id="receipient_public_key"
-                        rows="3"
-                        class="form-control"
-                        placeholder="Paste the recipient public key here"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input
-                        type="number"
-                        min="0"
-                        step="any"
-                        name="amount"
-                        id="amount"
-                        class="form-control"
-                        placeholder="Enter amount to send">
-                </div>
-
-                <div class="text-right mt-3">
-                    <button
-                        type="button"
-                        id="generate_transaction"
-                        class="btn btn-primary px-4">
-                        <i class="fa fa-bolt mr-1"></i> Generate Transaction
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Transaction</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Balance card -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h4 class="mb-3">Check Balance</h4>
-            <p class="text-muted mb-3">
-                Paste a public key, then click <strong>Get Balance</strong> to calculate received, sent, and balance from this node.
-            </p>
+                <div class="modal-body">
+                    <form id="confirmation_transaction_form">
+                        <!-- sender_public_key -->
+                        <div class="form-group">
+                            <label for="confirmation_sender_public_key">Sender Public Key</label>
+                            <textarea id="confirmation_sender_public_key" name="sender_public_key" rows="2"
+                                class="form-control" readonly></textarea>
+                        </div>
 
-            <div class="form-group">
-                <label for="balance_public_key">Public key</label>
-                <textarea
-                    id="balance_public_key"
-                    rows="2"
-                    class="form-control"
-                    placeholder="Paste public key here"></textarea>
-            </div>
+                        <!-- receipient_public_key -->
+                        <div class="form-group">
+                            <label for="confirmation_receipient_public_key">Recipient Public Key</label>
+                            <textarea id="confirmation_receipient_public_key" name="receipient_public_key" rows="2"
+                                class="form-control" readonly></textarea>
+                        </div>
 
-            <button id="button_get_balance" class="btn btn-outline-primary">
-                Get Balance
-            </button>
+                        <div class="form-row">
+                            <!-- amount -->
+                            <div class="form-group col-md-6">
+                                <label for="confirmation_amount">Amount</label>
+                                <input type="text" id="confirmation_amount" name="amount" class="form-control" readonly>
+                            </div>
 
-            <div id="balance_result" class="mt-3" style="display:none;">
-                <p class="mb-1"><strong>Received:</strong> <span id="balance_received">0</span></p>
-                <p class="mb-1"><strong>Sent:</strong> <span id="balance_sent">0</span></p>
-                <p class="mb-0"><strong>Balance:</strong> <span id="balance_total">0</span></p>
-            </div>
-        </div>
-    </div>
+                            <!-- node_url: not sent to node -->
+                            <div class="form-group col-md-6">
+                                <label for="node_url">Blockchain Node URL</label>
+                                <input type="text" id="node_url" class="form-control" value="http://127.0.0.1:5001">
+                            </div>
+                        </div>
 
-    <!-- Address Activity card -->
-    <div class="card shadow-sm mb-5">
-        <div class="card-body">
-            <h4 class="mb-3">Address Activity</h4>
-            <p class="text-muted mb-3">
-                Paste a public key and click <strong>Load Activity</strong> to see all transactions involving that address.
-            </p>
-
-            <div class="form-group">
-                <label for="history_public_key">Public key</label>
-                <textarea
-                    id="history_public_key"
-                    rows="2"
-                    class="form-control"
-                    placeholder="Paste public key here"></textarea>
-            </div>
-
-            <button id="button_get_history" class="btn btn-outline-primary">
-                Load Activity
-            </button>
-
-            <div class="table-responsive mt-3" id="history_wrapper" style="display:none;">
-                <table class="table table-sm table-striped" id="history_table">
-                    <thead>
-                        <tr>
-                            <th>Direction</th>
-                            <th>Amount</th>
-                            <th>Recipient Public Key</th>
-                            <th>Block#</th>
-                            <th>Status</th>
-                            <th>Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Confirmation Modal -->
-<div class="modal fade" id="basic_modal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title">Confirm Transaction</h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <form id="confirmation_transaction_form">
-            <!-- sender_public_key -->
-            <div class="form-group">
-                <label for="confirmation_sender_public_key">Sender Public Key</label>
-                <textarea
-                    id="confirmation_sender_public_key"
-                    name="sender_public_key"
-                    rows="2"
-                    class="form-control"
-                    readonly></textarea>
-            </div>
-
-            <!-- receipient_public_key -->
-            <div class="form-group">
-                <label for="confirmation_receipient_public_key">Recipient Public Key</label>
-                <textarea
-                    id="confirmation_receipient_public_key"
-                    name="receipient_public_key"
-                    rows="2"
-                    class="form-control"
-                    readonly></textarea>
-            </div>
-
-            <div class="form-row">
-                <!-- amount -->
-                <div class="form-group col-md-6">
-                    <label for="confirmation_amount">Amount</label>
-                    <input
-                        type="text"
-                        id="confirmation_amount"
-                        name="amount"
-                        class="form-control"
-                        readonly>
+                        <!-- signature -->
+                        <div class="form-group">
+                            <label for="transaction_signature">Transaction Signature</label>
+                            <textarea id="transaction_signature" name="signature" rows="2" class="form-control"
+                                readonly></textarea>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- node_url: not sent to node -->
-                <div class="form-group col-md-6">
-                    <label for="node_url">Blockchain Node URL</label>
-                    <input
-                        type="text"
-                        id="node_url"
-                        class="form-control"
-                        value="http://127.0.0.1:5001">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" id="button_confirm_transaction" class="btn btn-success">
+                        Confirm Transaction
+                    </button>
                 </div>
+
             </div>
-
-            <!-- signature -->
-            <div class="form-group">
-                <label for="transaction_signature">Transaction Signature</label>
-                <textarea
-                    id="transaction_signature"
-                    name="signature"
-                    rows="2"
-                    class="form-control"
-                    readonly></textarea>
-            </div>
-        </form>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
-            Cancel
-        </button>
-        <button type="button" id="button_confirm_transaction" class="btn btn-success">
-            Confirm Transaction
-        </button>
-      </div>
-
+        </div>
     </div>
-  </div>
-</div>
 
-<script src="/static/vendor/jquery/jquery.min.js"></script>
-<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-<script>
-$(function () {
+    <script>
+        $(function () {
 
-    // Generate transaction: creates and signs tx on client backend
-    $('#generate_transaction').click(function () {
-        $.ajax({
-            url:"/generate/transaction",
-            type:"POST",
-            dataType:"json",
-            data:$('#transaction_form').serialize(),
-            success:function(response)
-            {
-                const tx = response.transaction;
-                $('#confirmation_sender_public_key').val(tx.sender_public_key);
-                $('#confirmation_receipient_public_key').val(tx.receipient_public_key);
-                $('#confirmation_amount').val(tx.amount);
-                $('#transaction_signature').val(response.signature);
-                $('#basic_modal').modal('show');
-            },
-            error: function(response)
-            {
-                console.log(response);
-                alert('Error generating transaction');
-            }
-        });
-    });
+            // Generate transaction: creates and signs tx on client backend
+            $('#generate_transaction').click(function () {
+                const senderPub = $('#sender_public_key').val().trim();
+                const recipPub = $('#receipient_public_key').val().trim();
+                const amountStr = $('#amount').val().trim();
+                const amountVal = parseFloat(amountStr);
 
-    // Confirm transaction: sends tx + signature to node
-    $('#button_confirm_transaction').click(function () {
-        $.ajax({
-            url: $('#node_url').val() + "/transaction/new",
-            type: "POST",
-            dataType: "json",
-            headers: { "Access-Control-Allow-Origin": "*" },
-            data: $("#confirmation_transaction_form").serialize(),
-            success: function () {
-                $('#basic_modal').modal('hide');
-                alert('Transaction sent to node');
-            },
-            error: function (xhr, status, error) {
-                console.error("Transaction error:", error);
-                let msg = 'Error sending transaction to node';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    msg = xhr.responseJSON.message;
+                // Basic presence checks
+                if (!senderPub) {
+                    alert('Please paste the sender public key.');
+                    return;
                 }
-                alert(msg);
-            }
-        });
-    });
-    
-    // Balance calculation using /chain
-    $('#button_get_balance').click(function () {
-        const pubKey = $('#balance_public_key').val().trim();
-        if (!pubKey) {
-            alert('Please paste a public key first.');
-            return;
-        }
-
-        $.ajax({
-            url: 'http://127.0.0.1:5001/chain',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                let received = 0.0;
-                let sent = 0.0;
-
-                for (let i = 0; i < response.length; i++) {
-                    const block = response.chain[i];
-                    const txs = block.transactions || [];
-                    for (let j = 0; j < txs.length; j++) {
-                        const tx = txs[j];
-                        const amt = parseFloat(tx.amount || 0);
-
-                        if (tx.recipient_public_key === pubKey) {
-                            received += amt;
-                        }
-                        if (tx.sender_public_key === pubKey) {
-                            sent += amt;
-                        }
-                    }
-                }
-                const balance = received - sent;
-
-                $('#balance_received').text(received);
-                $('#balance_sent').text(sent);
-                $('#balance_total').text(balance);
-                $('#balance_result').show();
-            },
-            error: function (err) {
-                console.log(err);
-                alert('Could not fetch chain from node.');
-            }
-        });
-    });
-
-    // Address activity using /address/<pub>/transactions
-    $('#button_get_history').click(function () {
-        const pubKey = $('#history_public_key').val().trim();
-        if (!pubKey) {
-            alert('Please paste a public key first.');
-            return;
-        }
-
-        $.ajax({
-            url: 'http://127.0.0.1:5001/address/' + encodeURIComponent(pubKey) + '/transactions',
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                const tbody = $('#history_table tbody');
-                tbody.empty();
-
-                const txs = response.transactions || [];
-                if (txs.length === 0) {
-                    $('#history_wrapper').show();
-                    tbody.append('<tr><td colspan="6" class="text-muted">No transactions found for this address.</td></tr>');
+                if (!recipPub) {
+                    alert('Please paste the recipient public key.');
                     return;
                 }
 
-                for (let i = 0; i < txs.length; i++) {
-                    const tx = txs[i];
-                    const direction = tx.direction || '';
-                    const amount = tx.amount;
-                    const status = tx.status || '';
-                    const blockNumber = tx.block_number || '-';
-
-                    let counterparty = '';
-                    if (direction === 'OUT') {
-                        counterparty = tx.recipient_public_key;
-                    } else if (direction === 'IN') {
-                        counterparty = tx.sender_public_key;
-                    }
-
-                    let timestampText = '-';
-                    if (tx.timestamp) {
-                        const date = new Date(tx.timestamp * 1000);
-                        timestampText = date.toLocaleString();
-                    }
-
-                    const row = '<tr>' +
-                        '<td>' + direction + '</td>' +
-                        '<td>' + amount + '</td>' +
-                        '<td style="max-width: 320px; word-break: break-all;">' + counterparty + '</td>' +
-                        '<td>' + blockNumber + '</td>' +
-                        '<td>' + status + '</td>' +
-                        '<td>' + timestampText + '</td>' +
-                        '</tr>';
-
-                    tbody.append(row);
+                // NEW: prevent same key on client side
+                if (senderPub === recipPub) {
+                    alert('Sender and recipient public keys cannot be the same.');
+                    return;
                 }
 
-                $('#history_wrapper').show();
-            },
-            error: function (err) {
-                console.log(err);
-                alert('Could not load address activity from node.');
-            }
+                // Amount validation
+                if (!amountStr || isNaN(amountVal) || amountVal <= 0) {
+                    alert('Please enter a valid positive amount.');
+                    return;
+                }
+
+                // All good → call backend to generate transaction
+                $.ajax({
+                    url: "/generate/transaction",
+                    type: "POST",
+                    dataType: "json",
+                    data: $('#transaction_form').serialize(),
+                    success: function (response) {
+                        const tx = response.transaction;
+                        $('#confirmation_sender_public_key').val(tx.sender_public_key);
+                        $('#confirmation_receipient_public_key').val(tx.receipient_public_key);
+                        $('#confirmation_amount').val(tx.amount);
+                        $('#transaction_signature').val(response.signature);
+                        $('#basic_modal').modal('show');
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        alert('Error generating transaction');
+                    }
+                });
+            });
+
+
+            // Confirm transaction: sends tx + signature to node
+            $('#button_confirm_transaction').click(function () {
+                $.ajax({
+                    url: $('#node_url').val() + "/transaction/new",
+                    type: "POST",
+                    dataType: "json",
+                    headers: { "Access-Control-Allow-Origin": "*" },
+                    data: $("#confirmation_transaction_form").serialize(),
+                    success: function () {
+                        $('#basic_modal').modal('hide');
+                        alert('Transaction sent to node');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Transaction error:", error);
+                        let msg = 'Error sending transaction to node';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        alert(msg);
+                    }
+                });
+            });
+
+            // Balance calculation using /chain
+            $('#button_get_balance').click(function () {
+                const pubKey = $('#balance_public_key').val().trim();
+                if (!pubKey) {
+                    alert('Please paste a public key first.');
+                    return;
+                }
+
+                $.ajax({
+                    url: 'http://127.0.0.1:5001/chain',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        let received = 0.0;
+                        let sent = 0.0;
+
+                        for (let i = 0; i < response.length; i++) {
+                            const block = response.chain[i];
+                            const txs = block.transactions || [];
+                            for (let j = 0; j < txs.length; j++) {
+                                const tx = txs[j];
+                                const amt = parseFloat(tx.amount || 0);
+
+                                if (tx.recipient_public_key === pubKey) {
+                                    received += amt;
+                                }
+                                if (tx.sender_public_key === pubKey) {
+                                    sent += amt;
+                                }
+                            }
+                        }
+                        const balance = received - sent;
+
+                        $('#balance_received').text(received);
+                        $('#balance_sent').text(sent);
+                        $('#balance_total').text(balance);
+                        $('#balance_result').show();
+                    },
+                    error: function (err) {
+                        console.log(err);
+                        alert('Could not fetch chain from node.');
+                    }
+                });
+            });
+
+            // Address activity using /address/<pub>/transactions
+            $('#button_get_history').click(function () {
+                const pubKey = $('#history_public_key').val().trim();
+                if (!pubKey) {
+                    alert('Please paste a public key first.');
+                    return;
+                }
+
+                $.ajax({
+                    url: 'http://127.0.0.1:5001/address/' + encodeURIComponent(pubKey) + '/transactions',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        const tbody = $('#history_table tbody');
+                        tbody.empty();
+
+                        const txs = response.transactions || [];
+                        if (txs.length === 0) {
+                            $('#history_wrapper').show();
+                            tbody.append('<tr><td colspan="6" class="text-muted">No transactions found for this address.</td></tr>');
+                            return;
+                        }
+
+                        for (let i = 0; i < txs.length; i++) {
+                            const tx = txs[i];
+                            const direction = tx.direction || '';
+                            const amount = tx.amount;
+                            const status = tx.status || '';
+                            const blockNumber = tx.block_number || '-';
+
+                            let counterparty = '';
+                            if (direction === 'OUT') {
+                                counterparty = tx.recipient_public_key;
+                            } else if (direction === 'IN') {
+                                counterparty = tx.sender_public_key;
+                            }
+
+                            let timestampText = '-';
+                            if (tx.timestamp) {
+                                const date = new Date(tx.timestamp * 1000);
+                                timestampText = date.toLocaleString();
+                            }
+
+                            const row = '<tr>' +
+                                '<td>' + direction + '</td>' +
+                                '<td>' + amount + '</td>' +
+                                '<td style="max-width: 320px; word-break: break-all;">' + counterparty + '</td>' +
+                                '<td>' + blockNumber + '</td>' +
+                                '<td>' + status + '</td>' +
+                                '<td>' + timestampText + '</td>' +
+                                '</tr>';
+
+                            tbody.append(row);
+                        }
+
+                        $('#history_wrapper').show();
+                    },
+                    error: function (err) {
+                        console.log(err);
+                        alert('Could not load address activity from node.');
+                    }
+                });
+            });
+
         });
-    });
-
-});
-</script>
-
+    </script>
 </body>
+
 </html>

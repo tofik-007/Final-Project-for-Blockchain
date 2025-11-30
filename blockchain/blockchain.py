@@ -138,7 +138,7 @@ class Blockchain:
 
     # UPDATED: now returns (result, error_message)
     def submit_transaction(self, sender_public_key, recipient_public_key, signature, amount):
-    # validate amount
+    # keep simple numeric validation
         try:
             amount = float(amount)
         except (TypeError, ValueError):
@@ -147,10 +147,6 @@ class Blockchain:
         if amount <= 0:
             return False, "Amount must be greater than 0"
 
-    # NEW: prevent self‑transfer (same sender and recipient)
-        if sender_public_key == recipient_public_key:
-            return False, "Sender and recipient cannot be the same address"
-
         transaction = OrderedDict(
             {
                 "sender_public_key": sender_public_key,
@@ -158,12 +154,12 @@ class Blockchain:
                 "amount": amount,
             }
         )
-        # Reward for mining a block
+
+    # Reward for mining a block
         if sender_public_key == MINING_SENDER:
             self.transactions.append(transaction)
             return len(self.chain) + 1, None
         else:
-            # Transaction from wallet to another wallet
             signature_verification = self.verify_transaction_signature(
                 sender_public_key, signature, transaction
             )
