@@ -1,5 +1,5 @@
 
-# Mini Blockchain Wallet & Client
+# Decentralized Blockchain Transaction System
 
 This project is a small educational blockchain system consisting of:
 
